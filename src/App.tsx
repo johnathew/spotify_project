@@ -1,5 +1,9 @@
 import "./App.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, createContext } from "react";
+import SearchResults from "./components/SearchResults";
+import { SpotifyTrack } from "./types/SpotifyAPITypes";
+
+export const TrackContext = createContext<SpotifyTrack[] | null>(null);
 
 function App() {
   const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CID;
@@ -10,6 +14,8 @@ function App() {
 
   const [token, setToken] = useState("");
   const [query, setQuery] = useState("");
+  const [tracks, setTracks] = useState<SpotifyTrack[] | null>(null);
+  const [error, setError] = useState({});
 
   useEffect(() => {
     let authParameters = {
@@ -26,7 +32,8 @@ function App() {
 
     fetch("https://accounts.spotify.com/api/token", authParameters)
       .then((res) => res.json())
-      .then((data) => setToken(data.access_token));
+      .then((data) => setToken(data.access_token))
+      .catch((err) => setError(err));
   }, []);
 
   const songSearchHandler = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -39,28 +46,31 @@ function App() {
         Authorization: "Bearer " + token,
       },
     };
-
-    fetch(
-      `https://api.spotify.com/v1/search?q=${query}&type=track`,
-      trackParameters
-    )
-      .then((res) => res.json())
-      .then((data) => console.log(data));
+    if (query.length >= 1) {
+      fetch(
+        `https://api.spotify.com/v1/search?q=${query}&type=track`,
+        trackParameters
+      )
+        .then((res) => res.json())
+        .then((data) => setTracks(data.tracks.items));
+    }
   };
-
   return (
-    <div>
-      Spotify Project
-      <form onSubmit={songSearchHandler}>
-        <input
-          type="text"
-          value={query}
-          placeholder="Search for a song"
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <button>Track Search</button>
-      </form>
-    </div>
+    <TrackContext.Provider value={tracks}>
+      <div>
+        Spotify Project
+        <form onSubmit={songSearchHandler}>
+          <input
+            type="text"
+            value={query}
+            placeholder="Search for a song"
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <button>Track Search</button>
+        </form>
+        <SearchResults />
+      </div>
+    </TrackContext.Provider>
   );
 }
 
