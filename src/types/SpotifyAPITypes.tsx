@@ -16,7 +16,7 @@ export interface SpotifyTrack {
   track_number:      number;
   type:              string;
   uri:               string;
-}{}
+}
 
 export interface Album {
   album_type:             string;
@@ -58,3 +58,9 @@ export interface ExternalIDS {
 }
 
   
+export type TrackTypes = {
+    name: string;
+    artists: string;
+    album: string;
+    id: string;
+}
