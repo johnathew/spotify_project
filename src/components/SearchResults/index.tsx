@@ -4,26 +4,27 @@ import { AuthContext } from "@/context/auth-context";
 import Track from "../Track";
 
 const SearchResults = () => {
+  const ctx = useContext(AuthContext);
 
-  const ctx = useContext(AuthContext)
-  const results = ctx.trackData.map((data) => {
-    return (
-      <Track
-        name={data.name}
-        artists={data.album.artists[0].name}
-        album={data.album.name}
-        id={data.id}
-        key={data.id}
-      />
-    );
-  });
-
-
+  let content: React.ReactNode = (
+    <p className="text-black">Song results go here</p>
+  );
 
   if (ctx.trackData.length >= 1) {
-    return <div>{results}</div>;
+    content = ctx.trackData.map((data) => {
+      return (
+        <Track
+          name={data.name}
+          artists={data.album.artists[0].name}
+          album={data.album.name}
+          id={data.id}
+          key={data.id}
+        />
+      );
+    });
   }
 
+  return <>{content}</>;
 };
 
 export default SearchResults;

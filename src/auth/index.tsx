@@ -34,35 +34,11 @@ async function generateCodeChallenge(codeVerifier: string) {
 }
 
 const SpotifyLogin = ({ authorized }: { authorized: (T: string) => void }) => {
-  const cToken = localStorage.getItem("code-verifier") || "";
-  const aToken = localStorage.getItem("access-token") || "";
-
-  const [token, setToken] = useState<string | null>(cToken);
-  const [accessToken, setAccessToken] = useState<string | null>(aToken);
   const [userData, setUserData] = useState<any | null>({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<any | null>(null);
 
   const [auth, setAuth] = useState(false);
-  useEffect(() => {
-    let ignore = false;
-    if (token && !accessToken && !ignore) {
-      getAccessToken();
-    } else {
-      return;
-    }
-
-    return () => {
-      ignore = true;
-    };
-  }, [token, accessToken]);
-
-  useEffect(() => {
-    if (token && accessToken && !auth) {
-      getProfile(accessToken);
-      authorized(accessToken);
-    }
-  }, [token, accessToken, auth]);
 
   let codeVerifier = generateRandomString(128);
 
@@ -87,10 +63,9 @@ const SpotifyLogin = ({ authorized }: { authorized: (T: string) => void }) => {
       });
       win.location = "https://accounts.spotify.com/authorize?" + args;
     });
-    setToken(() => localStorage.getItem("code-verifier"));
   };
 
-  const getAccessToken = () => {
+  const getAccessToken = async () => {
     const urlParams = new URLSearchParams(window.location.search);
     let code = urlParams.get("code");
     let codeVerifier: string | null = localStorage.getItem("code-verifier");
@@ -103,7 +78,7 @@ const SpotifyLogin = ({ authorized }: { authorized: (T: string) => void }) => {
       code_verifier: codeVerifier!,
     });
 
-    fetch("https://accounts.spotify.com/api/token", {
+    await fetch("https://accounts.spotify.com/api/token", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -118,7 +93,8 @@ const SpotifyLogin = ({ authorized }: { authorized: (T: string) => void }) => {
       })
       .then((data) => {
         localStorage.setItem("access-token", data.access_token);
-        setAccessToken(() => localStorage.getItem("access-token"));
+        getProfile(data.access_token);
+        authorized(data.access_token);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -135,12 +111,12 @@ const SpotifyLogin = ({ authorized }: { authorized: (T: string) => void }) => {
           Authorization: "Bearer " + accessToken,
         },
       });
-
       if (!response.ok) {
         throw new Error("Something went wrong.");
       }
 
       const data = await response.json();
+      console.log(data);
       setAuth(true);
       setUserData(data);
     } catch (error) {
@@ -149,25 +125,30 @@ const SpotifyLogin = ({ authorized }: { authorized: (T: string) => void }) => {
     setIsLoading(false);
   };
 
-  const clearCache = () => {
-    window.localStorage.clear();
-    console.log("cache clear");
-  };
+  useEffect(() => {
+    const cToken = localStorage.getItem("code-verifier");
+    let ignore = false;
+
+    if (cToken !== null && !ignore) {
+      getAccessToken();
+    }
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const logoutHandler = () => {
     window.localStorage.clear();
     setAuth(false);
-    setAccessToken("");
-    setToken("");
     setUserData(null);
-    
   };
+
   return (
     <>
       {!auth && (
         <>
           <Button onClick={loginHandler}>Login</Button>{" "}
-          <Button onClick={clearCache}> Clear cache</Button>
         </>
       )}
       {auth && (
