@@ -68,7 +68,7 @@ const SpotifyLogin = ({ authorized }: { authorized: (T: string) => void }) => {
   const getAccessToken = async () => {
     const urlParams = new URLSearchParams(window.location.search);
     let code = urlParams.get("code");
-    let codeVerifier: string | null = localStorage.getItem("code-verifier");
+    let codeVerifier = localStorage.getItem("code-verifier");
 
     let body = new URLSearchParams({
       grant_type: "authorization_code",
@@ -104,7 +104,6 @@ const SpotifyLogin = ({ authorized }: { authorized: (T: string) => void }) => {
   const getProfile = async (accessToken: string | null) => {
     setIsLoading(true);
     setError(null);
-
     try {
       const response = await fetch("https://api.spotify.com/v1/me", {
         headers: {
@@ -114,9 +113,7 @@ const SpotifyLogin = ({ authorized }: { authorized: (T: string) => void }) => {
       if (!response.ok) {
         throw new Error("Something went wrong.");
       }
-
       const data = await response.json();
-      console.log(data);
       setAuth(true);
       setUserData(data);
     } catch (error) {
@@ -129,8 +126,12 @@ const SpotifyLogin = ({ authorized }: { authorized: (T: string) => void }) => {
     const cToken = localStorage.getItem("code-verifier");
     let ignore = false;
 
-    if (cToken !== null && !ignore) {
-      getAccessToken();
+    if (!ignore) {
+      if (cToken) {
+        setTimeout(() => {
+          getAccessToken();
+        }, 500);
+      }
     }
 
     return () => {
@@ -142,6 +143,7 @@ const SpotifyLogin = ({ authorized }: { authorized: (T: string) => void }) => {
     window.localStorage.clear();
     setAuth(false);
     setUserData(null);
+    authorized("");
   };
 
   return (
