@@ -1,8 +1,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Label } from "@/components/ui/label";
+import { UserProfile } from "@/types/SpotifyAPITypes";
 
 const clientId = import.meta.env.VITE_SPOTIFY_CID;
 const redirectUri = import.meta.env.VITE_REDIRECT_URI;
@@ -33,8 +34,16 @@ async function generateCodeChallenge(codeVerifier: string) {
   return base64encode(digest);
 }
 
-const SpotifyLogin = ({ authorized }: { authorized: (T: string) => void }) => {
-  const [userData, setUserData] = useState<any | null>({});
+const SpotifyLogin = ({
+  authorized,
+  userProfile,
+}: {
+  authorized: (T: string) => void;
+  userProfile: (T: UserProfile) => void;
+}) => {
+  const intervalRef = useRef(0);
+
+  const [userData, setUserData] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<any | null>(null);
 
@@ -44,6 +53,7 @@ const SpotifyLogin = ({ authorized }: { authorized: (T: string) => void }) => {
 
   const loginHandler = () => {
     const win: Window = window;
+    window.localStorage.clear();
     setError(null);
 
     generateCodeChallenge(codeVerifier).then((codeChallenge) => {
@@ -113,9 +123,12 @@ const SpotifyLogin = ({ authorized }: { authorized: (T: string) => void }) => {
       if (!response.ok) {
         throw new Error("Something went wrong.");
       }
-      const data = await response.json();
+
+      const data: UserProfile = await response.json();
+      console.log(data, "data");
       setAuth(true);
       setUserData(data);
+      userProfile(data);
     } catch (error) {
       setError(error);
     }
@@ -123,21 +136,23 @@ const SpotifyLogin = ({ authorized }: { authorized: (T: string) => void }) => {
   };
 
   useEffect(() => {
-    const cToken = localStorage.getItem("code-verifier");
-    let ignore = false;
+    let localCodeToken = localStorage.getItem('code-verifier')
+    let localAccessToken = localStorage.getItem('access-token')
 
-    if (!ignore) {
-      if (cToken) {
-        setTimeout(() => {
-          getAccessToken();
-        }, 500);
-      }
+    if(localAccessToken) {
+      setTimeout(() => {
+        getProfile(localAccessToken)
+      }, 100)
     }
 
-    return () => {
-      ignore = true;
-    };
+    if (localCodeToken) {
+      setTimeout(() => {
+        getAccessToken();
+      }, 100);
+    }
   }, []);
+
+  
 
   const logoutHandler = () => {
     window.localStorage.clear();
@@ -161,21 +176,21 @@ const SpotifyLogin = ({ authorized }: { authorized: (T: string) => void }) => {
             <div className="bg-green-700 p-3 rounded-sm shadow-md">
               <div className="flex gap-2 items-center">
                 <Avatar>
-                  <AvatarImage src={userData.images[0].url} />
-                  <AvatarFallback>{userData.display_name}</AvatarFallback>
+                  <AvatarImage src={userData?.images[0].url} />
+                  <AvatarFallback>{userData?.display_name}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col gap-y-2">
                   <Label>
                     <span className="font-light">Username: </span>
-                    {userData.display_name}
+                    {userData?.display_name}
                   </Label>
                   <Label>
                     <span className="font-light">Email: </span>
-                    {userData.email}
+                    {userData?.email}
                   </Label>
                   <Label>
                     <span className="font-light">Followers: </span>{" "}
-                    {userData.followers.total}
+                    {userData?.followers.total}
                   </Label>
                 </div>
               </div>
