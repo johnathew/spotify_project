@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { UserProfile } from "@/types/SpotifyAPITypes";
 
@@ -41,8 +41,6 @@ const SpotifyLogin = ({
   authorized: (T: string) => void;
   userProfile: (T: UserProfile) => void;
 }) => {
-  const intervalRef = useRef(0);
-
   const [userData, setUserData] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<any | null>(null);
@@ -125,34 +123,35 @@ const SpotifyLogin = ({
       }
 
       const data: UserProfile = await response.json();
-      console.log(data, "data");
+
       setAuth(true);
       setUserData(data);
       userProfile(data);
+      localStorage.setItem("user-profile", JSON.stringify(data));
     } catch (error) {
       setError(error);
     }
+
     setIsLoading(false);
   };
 
   useEffect(() => {
-    let localCodeToken = localStorage.getItem('code-verifier')
-    let localAccessToken = localStorage.getItem('access-token')
+    let localCodeToken = localStorage.getItem("code-verifier");
+    let localUserData = localStorage.getItem("user-profile");
+    const parsedData = JSON.parse(localUserData!);
 
-    if(localAccessToken) {
-      setTimeout(() => {
-        getProfile(localAccessToken)
-      }, 100)
+    if (localUserData) {
+      setUserData(() => parsedData);
+      setAuth(true);
     }
 
-    if (localCodeToken) {
+    if (localCodeToken && parsedData === null) {
       setTimeout(() => {
         getAccessToken();
+        console.log("this is running ");
       }, 100);
     }
   }, []);
-
-  
 
   const logoutHandler = () => {
     window.localStorage.clear();
@@ -160,6 +159,14 @@ const SpotifyLogin = ({
     setUserData(null);
     authorized("");
   };
+
+  // let localUserData = localStorage.getItem('user-profile')
+
+  // const parsedData = JSON.parse(localUserData)
+  // if (parsedData) {
+  //   setAuth(true)
+  //   setUserData(parsedData)
+  // }
 
   return (
     <>
