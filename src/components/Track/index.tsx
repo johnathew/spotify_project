@@ -5,7 +5,7 @@ const Track = ({ name, artists, album, id }: TrackTypes) => {
   return (
     <ul
       key={id}
-      className="border-2  w-full h-full bg-black rounded-lg flex justify-around space-x-8 items-center"
+      className="border-2 w-1/2 space-x-10 h-full bg-black rounded-lg flex justify-between"
     >
       <li>{name}</li>
       <li>{artists}</li>

@@ -6,7 +6,6 @@ import Track from "../Track";
 const SearchResults = () => {
   const ctx = useContext(AuthContext);
 
-
   let content: React.ReactNode = (
     <p className="text-black">Song results go here</p>
   );

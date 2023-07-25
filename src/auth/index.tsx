@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { UserProfile } from "@/types/SpotifyAPITypes";
 
@@ -41,11 +41,15 @@ const SpotifyLogin = ({
   authorized: (T: string) => void;
   userProfile: (T: UserProfile) => void;
 }) => {
-  const [userData, setUserData] = useState<UserProfile | null>(null);
+  let localUserProfile = localStorage.getItem("user-profile");
+  let parsedUserData = JSON.parse(localUserProfile!);
+
+  const [userData, setUserData] = useState<UserProfile | null>(
+    parsedUserData || null
+  );
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<any | null>(null);
-
-  const [auth, setAuth] = useState(false);
 
   let codeVerifier = generateRandomString(128);
 
@@ -101,6 +105,7 @@ const SpotifyLogin = ({
       })
       .then((data) => {
         localStorage.setItem("access-token", data.access_token);
+        localStorage.setItem("refresh-token", data.refresh_token);
         getProfile(data.access_token);
         authorized(data.access_token);
       })
@@ -124,7 +129,6 @@ const SpotifyLogin = ({
 
       const data: UserProfile = await response.json();
 
-      setAuth(true);
       setUserData(data);
       userProfile(data);
       localStorage.setItem("user-profile", JSON.stringify(data));
@@ -135,50 +139,75 @@ const SpotifyLogin = ({
     setIsLoading(false);
   };
 
+  const getRefreshToken = async (refreshToken: string) => {
+    let body = new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: refreshToken!,
+      client_id: clientId,
+    });
+
+    try {
+      const response = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: body,
+      });
+      if (!response.ok) {
+        throw new Error("Something went wrong.");
+      }
+
+      const data = await response.json();
+
+      localStorage.setItem("access-token", data.access_token);
+      localStorage.setItem("refresh-token", data.refresh_token);
+    } catch (error) {
+      setError(error);
+    }
+  };
+
+  const intervalRef = useRef(0);
   useEffect(() => {
     let localCodeToken = localStorage.getItem("code-verifier");
-    let localUserData = localStorage.getItem("user-profile");
-    const parsedData = JSON.parse(localUserData!);
+    let localRefreshToken = localStorage.getItem("refresh-token");
 
-    if (localUserData) {
-      setUserData(() => parsedData);
-      setAuth(true);
+    if (!userData && localCodeToken) {
+      getAccessToken();
+      console.log("this is running for access token function request");
     }
 
-    if (localCodeToken && parsedData === null) {
-      setTimeout(() => {
-        getAccessToken();
-        console.log("this is running ");
-      }, 100);
+    if (userData) {
+      const interval = window.setInterval(
+        () => getRefreshToken(localRefreshToken!),
+        3600 * 1000
+      );
+
+      console.log(intervalRef);
+      intervalRef.current = interval;
+
+      return clearInterval(interval);
     }
-  }, []);
+  }, [userData]);
 
   const logoutHandler = () => {
     window.localStorage.clear();
-    setAuth(false);
+
     setUserData(null);
     authorized("");
   };
 
-  // let localUserData = localStorage.getItem('user-profile')
-
-  // const parsedData = JSON.parse(localUserData)
-  // if (parsedData) {
-  //   setAuth(true)
-  //   setUserData(parsedData)
-  // }
-
   return (
     <>
-      {!auth && (
+      {!userData && (
         <>
           <Button onClick={loginHandler}>Login</Button>{" "}
         </>
       )}
-      {auth && (
+      {!userData && isLoading && <Skeleton className="w-[200px] h-[100px]" />}
+      {userData && (
         <>
           <Button onClick={logoutHandler}>Logout</Button>{" "}
-          {isLoading && <Skeleton className="w-[100px] h-[20px]" />}
           {!isLoading && !error && (
             <div className="bg-green-700 p-3 rounded-sm shadow-md">
               <div className="flex gap-2 items-center">
@@ -203,9 +232,9 @@ const SpotifyLogin = ({
               </div>
             </div>
           )}
-          {!isLoading && error && <p>{error}</p>}
         </>
       )}
+      {!isLoading && error && <p>{error}</p>}
     </>
   );
 };
