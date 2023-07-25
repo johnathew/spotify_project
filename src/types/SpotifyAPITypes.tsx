@@ -16,7 +16,7 @@ export interface SpotifyTrack {
   track_number:      number;
   type:              string;
   uri:               string;
-}
+}[]
 
 export interface Album {
   album_type:             string;
@@ -63,6 +63,7 @@ export type TrackTypes = {
     artists: string;
     album: string;
     id: string;
+    duration_ms: number
 }
 
 export interface UserProfile {
