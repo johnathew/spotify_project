@@ -185,12 +185,14 @@ const SpotifyLogin = ({
     const timer = setInterval(() => setDate(new Date().getMinutes()), 1000);
 
     if (userData) {
-      if (+expiration! - date! <= 5) {
+      if (+expiration! - date! <= 5 || +expiration! - date >= 61) {
         getRefreshToken(refresh!);
       }
     }
     if (!userData && localCodeToken) {
-      getAccessToken();
+      setTimeout(() => {
+        getAccessToken();
+      }, 200);
     }
 
     return () => {
@@ -198,7 +200,6 @@ const SpotifyLogin = ({
     };
   }, [userData]);
 
-  console.log(date);
   const logoutHandler = () => {
     window.localStorage.clear();
 
