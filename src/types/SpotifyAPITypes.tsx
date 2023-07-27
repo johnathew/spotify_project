@@ -63,7 +63,8 @@ export type TrackTypes = {
     artists: string;
     album: string;
     id: string;
-    duration_ms: number
+    duration_ms: number;
+    url: string
 }
 
 export interface UserProfile {

@@ -16,18 +16,14 @@ const SearchResults = () => {
   const ctx = useContext(AuthContext);
 
   let content: ReactNode = (
-    <TableBody className="text-black">
-      <TableRow>
-        <TableCell></TableCell>
-      </TableRow>
+    <TableBody>
     </TableBody>
   );
-
   if (ctx.trackData.length === 0) {
     content = (
       <TableBody className="text-black">
         <TableRow>
-          <TableCell>No results found</TableCell>
+          <TableCell>No results found.</TableCell>
         </TableRow>
       </TableBody>
     );
@@ -43,6 +39,7 @@ const SearchResults = () => {
           id={data.id}
           duration_ms={data.duration_ms}
           key={data.id}
+          url={data.album.images[1].url}
         />
       );
     });
@@ -50,13 +47,13 @@ const SearchResults = () => {
 
   return (
     <>
-      <Table>
-        <TableCaption>Song list results</TableCaption>
+      <Table className="w-1/2 p-10">
+        {ctx.trackData.length >= 1 && <TableCaption>Song list results</TableCaption>}
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Song Name</TableHead>
-            <TableHead>Artist</TableHead>
-            <TableHead>Album</TableHead>
+            <TableHead></TableHead>
+            <TableHead className="w-1/3">Title</TableHead>
+            <TableHead className="w-1/3">Artist</TableHead>
             <TableHead className="text-right">Duration</TableHead>
           </TableRow>
         </TableHeader>

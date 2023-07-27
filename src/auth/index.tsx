@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { UserProfile } from "@/types/SpotifyAPITypes";
 
@@ -43,6 +43,8 @@ const SpotifyLogin = ({
 }) => {
   let localUserProfile = localStorage.getItem("user-profile");
   let parsedUserData = JSON.parse(localUserProfile!);
+
+  const [date, setDate] = useState(new Date().getMinutes());
 
   const [userData, setUserData] = useState<UserProfile | null>(
     parsedUserData || null
@@ -106,6 +108,7 @@ const SpotifyLogin = ({
       .then((data) => {
         localStorage.setItem("access-token", data.access_token);
         localStorage.setItem("refresh-token", data.refresh_token);
+        calculateTimeInOneHour();
         getProfile(data.access_token);
         authorized(data.access_token);
       })
@@ -162,34 +165,40 @@ const SpotifyLogin = ({
 
       localStorage.setItem("access-token", data.access_token);
       localStorage.setItem("refresh-token", data.refresh_token);
+      calculateTimeInOneHour();
     } catch (error) {
       setError(error);
     }
   };
 
-  const intervalRef = useRef(0);
+  const calculateTimeInOneHour = () => {
+    const now = new Date();
+    let time = now.getMinutes() + 60;
+    localStorage.setItem("expires_in", JSON.stringify(time));
+  };
+
   useEffect(() => {
     let localCodeToken = localStorage.getItem("code-verifier");
-    let localRefreshToken = localStorage.getItem("refresh-token");
+    let refresh = localStorage.getItem("refresh-token");
+    let expiration = localStorage.getItem("expires_in");
 
-    if (!userData && localCodeToken) {
-      getAccessToken();
-      console.log("this is running for access token function request");
-    }
+    const timer = setInterval(() => setDate(new Date().getMinutes()), 1000);
 
     if (userData) {
-      const interval = window.setInterval(
-        () => getRefreshToken(localRefreshToken!),
-        3600 * 1000
-      );
-
-      console.log(intervalRef);
-      intervalRef.current = interval;
-
-      return clearInterval(interval);
+      if (+expiration! - date! <= 5) {
+        getRefreshToken(refresh!);
+      }
     }
+    if (!userData && localCodeToken) {
+      getAccessToken();
+    }
+
+    return () => {
+      clearInterval(timer);
+    };
   }, [userData]);
 
+  console.log(date);
   const logoutHandler = () => {
     window.localStorage.clear();
 
@@ -201,13 +210,13 @@ const SpotifyLogin = ({
     <>
       {!userData && (
         <>
-          <Button onClick={loginHandler}>Login</Button>{" "}
+          <Button onClick={loginHandler}>Login</Button>
         </>
       )}
       {!userData && isLoading && <Skeleton className="w-[200px] h-[100px]" />}
       {userData && (
         <>
-          <Button onClick={logoutHandler}>Logout</Button>{" "}
+          <Button onClick={logoutHandler}>Logout</Button>
           {!isLoading && !error && (
             <div className="bg-green-700 p-3 rounded-sm shadow-md">
               <div className="flex gap-2 items-center">
