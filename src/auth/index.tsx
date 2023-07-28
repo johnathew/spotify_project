@@ -8,6 +8,8 @@ import { UserProfile } from "@/types/SpotifyAPITypes";
 const clientId = import.meta.env.VITE_SPOTIFY_CID;
 const redirectUri = import.meta.env.VITE_REDIRECT_URI;
 
+let codeVerifier = generateRandomString(128);
+
 function generateRandomString(length: number) {
   let text = "";
   let possible =
@@ -52,8 +54,6 @@ const SpotifyLogin = ({
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<any | null>(null);
-
-  let codeVerifier = generateRandomString(128);
 
   const loginHandler = () => {
     const win: Window = window;
@@ -169,6 +169,7 @@ const SpotifyLogin = ({
     } catch (error) {
       setError(error);
     }
+    console.log("refresh token function fired");
   };
 
   const calculateTimeInOneHour = () => {
@@ -185,7 +186,7 @@ const SpotifyLogin = ({
     const timer = setInterval(() => setDate(new Date().getMinutes()), 1000);
 
     if (userData) {
-      if (+expiration! - date! <= 5 || +expiration! - date >= 61) {
+      if (+expiration! - date! <= 5 || +expiration! - date === 62) {
         getRefreshToken(refresh!);
       }
     }
@@ -194,7 +195,6 @@ const SpotifyLogin = ({
         getAccessToken();
       }, 200);
     }
-
     return () => {
       clearInterval(timer);
     };
@@ -202,7 +202,6 @@ const SpotifyLogin = ({
 
   const logoutHandler = () => {
     window.localStorage.clear();
-
     setUserData(null);
     authorized("");
   };
@@ -244,7 +243,7 @@ const SpotifyLogin = ({
           )}
         </>
       )}
-      {!isLoading && error && <p>{error}</p>}
+      {!isLoading && error && <p>{error.message}</p>}
     </>
   );
 };

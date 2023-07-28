@@ -22,7 +22,7 @@ const Track = ({ name, artists, album, duration_ms, url }: TrackTypes) => {
         <TableCell>
           <BsPlusCircle />
         </TableCell>
-        <TableCell className="font-medium flex space-x-2 w-full h-auto align-middle items-center">
+        <TableCell className="font-medium flex space-x-2 align-middle items-center">
           <img src={url} className="h-14 w-auto" />
           <div className="flex flex-col space-y-2">
             {name}

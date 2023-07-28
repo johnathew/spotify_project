@@ -47,13 +47,13 @@ const SearchResults = () => {
 
   return (
     <>
-      <Table className="w-1/2 p-10">
+      <Table className="w-1/2">
         {ctx.trackData.length >= 1 && <TableCaption>Song list results</TableCaption>}
         <TableHeader>
           <TableRow>
             <TableHead></TableHead>
-            <TableHead className="w-1/3">Title</TableHead>
-            <TableHead className="w-1/3">Artist</TableHead>
+            <TableHead className="w-3/4">Song & Album</TableHead>
+            <TableHead className="text-center">Artist</TableHead>
             <TableHead className="text-right">Duration</TableHead>
           </TableRow>
         </TableHeader>

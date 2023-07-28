@@ -6,15 +6,18 @@ import SpotifyLogin from "./auth";
 
 import { AuthContext } from "./context/auth-context";
 import SearchResults from "./components/SearchResults";
+import Playlist from "./components/Playlist";
 
 function App() {
-  const [token, setToken] = useState(() => {
-    let localToken = localStorage.getItem('access-token')
-    return localToken
-  });
+  let localUserInfo = localStorage.getItem("user-profile");
+  let parsedUserInfo = JSON.parse(localUserInfo!);
+  let localToken = localStorage.getItem("access-token");
 
+  const [token, setToken] = useState(localToken);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(
+    parsedUserInfo
+  );
   const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   const handleAuth = (accessToken: string) => {
     return setToken(accessToken);
@@ -41,6 +44,7 @@ function App() {
         <SpotifyLogin authorized={handleAuth} userProfile={handleUserProfile} />
         <SearchBar trackResults={handleData} />
         <SearchResults />
+        <Playlist />
       </div>
     </AuthContext.Provider>
   );
