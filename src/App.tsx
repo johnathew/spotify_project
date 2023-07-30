@@ -43,8 +43,10 @@ function App() {
         <h1 className="text-black">Spotify Playlist Project</h1>
         <SpotifyLogin authorized={handleAuth} userProfile={handleUserProfile} />
         <SearchBar trackResults={handleData} />
+        <div className="flex w-full justify-normal space-x-10">
         <SearchResults />
         <Playlist />
+        </div>
       </div>
     </AuthContext.Provider>
   );

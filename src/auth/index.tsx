@@ -198,7 +198,7 @@ const SpotifyLogin = ({
     return () => {
       clearInterval(timer);
     };
-  }, [userData]);
+  }, [userData, date]);
 
   const logoutHandler = () => {
     window.localStorage.clear();

@@ -15,10 +15,7 @@ import {
 const SearchResults = () => {
   const ctx = useContext(AuthContext);
 
-  let content: ReactNode = (
-    <TableBody>
-    </TableBody>
-  );
+  let content: ReactNode = <TableBody></TableBody>;
   if (ctx.trackData.length === 0) {
     content = (
       <TableBody className="text-black">
@@ -47,8 +44,10 @@ const SearchResults = () => {
 
   return (
     <>
-      <Table className="w-1/2">
-        {ctx.trackData.length >= 1 && <TableCaption>Song list results</TableCaption>}
+      <Table className="w-full">
+        {ctx.trackData.length >= 1 && (
+          <TableCaption>Song list results</TableCaption>
+        )}
         <TableHeader>
           <TableRow>
             <TableHead></TableHead>
@@ -57,7 +56,7 @@ const SearchResults = () => {
             <TableHead className="text-right">Duration</TableHead>
           </TableRow>
         </TableHeader>
-        {content}
+        <TableBody className="text-black">{content}</TableBody>
       </Table>
     </>
   );
