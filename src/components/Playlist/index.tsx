@@ -23,6 +23,7 @@ const Playlist = () => {
   const ctx = useContext(AuthContext);
   const [playlists, setPlaylists] = useState<PlaylistTypes[]>();
   const [playlistTracks, setPlaylistTracks] = useState<Item[]>();
+  const [loading, setLoading] = useState(false)
 
   const fetchUsersPlaylists = async () => {
     try {
@@ -100,7 +101,7 @@ const Playlist = () => {
       return (
         <Track
           name={trk.track.name}
-          artists={trk.track.album.artists[0].name}
+          artists={trk.track.album.artists[0]?.name}
           album={trk.track.name}
           id={trk.track.id}
           duration_ms={trk.track.duration_ms}
@@ -113,28 +114,27 @@ const Playlist = () => {
 
   return (
     <div className="flex flex-col w-full">
-      <div className="flex items-center align-middle justify-between px-2">
-        <h1 className="text-black font-bold underline underline-offset-8">User's Playlist Songs</h1>
+      <div className="flex items-center align-middle justify-around">
+        <h1 className="font-thin text-green-300">User's Playlist Songs</h1>
       <Select onValueChange={(id) => fetchSongsInPlaylist(id)}>
-        <SelectTrigger className="w-[180px] text-black">
-          <SelectValue className="text-black" placeholder="Playlists" />
+        <SelectTrigger className="w-[160px] text-center text-green-300">
+          <SelectValue placeholder="Playlists" />
         </SelectTrigger>
         <SelectContent className="w-full">
           {!content ? "No playlists found." : content}
         </SelectContent>
       </Select>
       </div>
-   
       <Table>
         <TableCaption>Playlist Tracks</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-3/4">Song & Album</TableHead>
-            <TableHead className="text-center">Artist</TableHead>
+            <TableHead className="w-1/2">Song / Artist</TableHead>
+            <TableHead className="text-center">Album</TableHead>
             <TableHead className="text-right">Duration</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className="text-black">{tracks}</TableBody>
+        <TableBody>{tracks}</TableBody>
       </Table>
     </div>
   );

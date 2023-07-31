@@ -43,19 +43,22 @@ const SearchResults = () => {
   }
 
   return (
-    <>
+    <div className="border-r-2 flex flex-col items-center">
+      <h1 className="font-thin mt-4 text-green-300">
+        Song Search Results
+      </h1>
       <Table className="w-full">
         <TableCaption>Search Results</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="">Song & Album</TableHead>
-            <TableHead className="text-center">Artist</TableHead>
+            <TableHead className="">Song / Artist</TableHead>
+            <TableHead className="text-center">Album</TableHead>
             <TableHead className="text-right">Duration</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className="text-black">{content}</TableBody>
+        <TableBody className="text-white">{content}</TableBody>
       </Table>
-    </>
+    </div>
   );
 };
 

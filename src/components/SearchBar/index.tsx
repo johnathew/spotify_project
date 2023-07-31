@@ -7,7 +7,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import * as z from "zod";
@@ -57,16 +56,15 @@ const SearchBar = ({ trackResults }: {trackResults: (T: any) => void}) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8 flex space-x-2 text-black"
+        className="flex text-black m-2 p-2 space-x-2"
       >
         <FormField
           control={form.control}
           name="query"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Search for music</FormLabel>
-              <FormControl>
-                <Input placeholder="Search..." {...field} />
+              <FormControl className="">
+                <Input placeholder="Find songs..." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

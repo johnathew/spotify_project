@@ -17,14 +17,14 @@ const Track = ({ name, artists, album, duration_ms, url }: TrackTypes) => {
 
   return (
     <TableRow>
-      <TableCell className="font-medium space-x-2 flex align-middle items-center text-black">
+      <TableCell className="font-medium space-x-2 flex align-middle items-center text-white">
         <img src={url} className="h-14 w-auto" />
         <div className="flex flex-col space-y-2">
           {name}
-          <div className="font-light">{album}</div>
+          <div className="font-light">{artists}</div>
         </div>
       </TableCell>
-      <TableCell className="text-center">{artists}</TableCell>
+      <TableCell className="text-center">{album}</TableCell>
       <TableCell className="text-right">
         {convertMsToMinutesSeconds(duration_ms)}
       </TableCell>
