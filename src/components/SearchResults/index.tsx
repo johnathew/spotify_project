@@ -15,14 +15,14 @@ import {
 const SearchResults = () => {
   const ctx = useContext(AuthContext);
 
-  let content: ReactNode = <TableBody></TableBody>;
+  let content: ReactNode = <TableRow></TableRow>;
+
   if (ctx.trackData.length === 0) {
     content = (
-      <TableBody className="text-black">
-        <TableRow>
-          <TableCell>No results found.</TableCell>
-        </TableRow>
-      </TableBody>
+      <TableRow>
+        <TableCell></TableCell>
+        <TableCell>No results found.</TableCell>
+      </TableRow>
     );
   }
 
@@ -45,13 +45,10 @@ const SearchResults = () => {
   return (
     <>
       <Table className="w-full">
-        {ctx.trackData.length >= 1 && (
-          <TableCaption>Song list results</TableCaption>
-        )}
+        <TableCaption>Search Results</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead></TableHead>
-            <TableHead className="w-3/4">Song & Album</TableHead>
+            <TableHead className="">Song & Album</TableHead>
             <TableHead className="text-center">Artist</TableHead>
             <TableHead className="text-right">Duration</TableHead>
           </TableRow>

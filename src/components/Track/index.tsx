@@ -1,5 +1,4 @@
 import { TrackTypes } from "../../types/SpotifyAPITypes";
-import { BsPlusCircle } from "react-icons/bs";
 import { TableCell, TableRow } from "@/components/ui/table";
 
 const Track = ({ name, artists, album, duration_ms, url }: TrackTypes) => {
@@ -18,9 +17,6 @@ const Track = ({ name, artists, album, duration_ms, url }: TrackTypes) => {
 
   return (
     <TableRow>
-      <TableCell>
-        <BsPlusCircle />
-      </TableCell>
       <TableCell className="font-medium space-x-2 flex align-middle items-center text-black">
         <img src={url} className="h-14 w-auto" />
         <div className="flex flex-col space-y-2">

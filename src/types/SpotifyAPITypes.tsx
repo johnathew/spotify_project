@@ -125,7 +125,7 @@ export type Item = {
   addedAt: string;
   addedBy: AddedBy;
   isLocal: boolean;
-  track: Track;
+  track: PlaylistSongs;
 };
 
 export type AddedBy = {
@@ -147,12 +147,12 @@ export type Followers = {
   total: number;
 };
 
-export type Track = {
+export type PlaylistSongs = {
   album: Album;
   artists: Artist[];
   availableMarkets: string[];
   discNumber: number;
-  durationMS: number;
+  duration_ms: number;
   explicit: boolean;
   externalIDS: ExternalIDS;
   externalUrls: ExternalUrls;

@@ -39,11 +39,11 @@ function App() {
         userData: userProfile,
       }}
     >
-      <div className="justify-center flex flex-col text-white w-full h-full items-center p-2">
+      <div className="justify-center flex flex-col text-white w-full p-2">
         <h1 className="text-black">Spotify Playlist Project</h1>
         <SpotifyLogin authorized={handleAuth} userProfile={handleUserProfile} />
         <SearchBar trackResults={handleData} />
-        <div className="flex w-full justify-normal space-x-10">
+        <div className="flex w-full p-2 md:max-h-screen overflow-scroll">
         <SearchResults />
         <Playlist />
         </div>
