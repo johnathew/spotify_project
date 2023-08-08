@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface SpotifyTrack {
   album: Album;
   artists: Artist[];
@@ -61,6 +63,9 @@ export type TrackTypes = {
   id: string;
   duration_ms: number;
   url: string;
+  uri: string | null;
+  onSelect: ((uri: string) => void) | null;
+  plus: ReactNode | undefined;
 };
 
 export interface UserProfile {

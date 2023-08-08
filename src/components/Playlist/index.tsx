@@ -18,12 +18,13 @@ import {
 } from "@/components/ui/select";
 import { Item, PlaylistTypes } from "@/types/SpotifyAPITypes";
 import Track from "../Track";
+import Loading from "../Loading";
 
 const Playlist = () => {
   const ctx = useContext(AuthContext);
   const [playlists, setPlaylists] = useState<PlaylistTypes[]>();
   const [playlistTracks, setPlaylistTracks] = useState<Item[]>();
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const fetchUsersPlaylists = async () => {
     try {
@@ -47,6 +48,7 @@ const Playlist = () => {
   };
 
   const fetchSongsInPlaylist = async (id: string) => {
+    setLoading(true);
     try {
       const response = await fetch(
         `https://api.spotify.com/v1/playlists/${id}/tracks`,
@@ -62,10 +64,11 @@ const Playlist = () => {
       }
       const playlistTracks = await response.json();
       setPlaylistTracks(playlistTracks.items);
-      console.log(playlistTracks.items);
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
+    console.log(id);
   };
 
   if (ctx.accessToken && playlists === undefined) {
@@ -96,11 +99,21 @@ const Playlist = () => {
     );
   }
 
-  if (playlistTracks?.length !== undefined) {
-    tracks = playlistTracks.map((trk) => {
+  if (loading) {
+    tracks = <Loading />;
+  }
+
+  // typescript expecting a URI prop...but not needed here. dont know what to do but make it null
+  if (playlistTracks?.length !== undefined && !loading) {
+    tracks = playlistTracks.map((trk, num) => {
       return (
         <Track
+          uri={null}
           name={trk.track.name}
+          plus={num + 1}
+          onSelect={() => {
+            return;
+          }}
           artists={trk.track.album.artists[0]?.name}
           album={trk.track.name}
           id={trk.track.id}
@@ -113,23 +126,24 @@ const Playlist = () => {
   }
 
   return (
-    <div className="flex flex-col w-full">
-      <div className="flex items-center align-middle justify-around">
+    <div className=" h-1/2 md:min-w-0 w-full md:h-full overflow-auto">
+      <div className="flex items-center align-middle justify-evenly">
         <h1 className="font-thin text-green-300">User's Playlist Songs</h1>
-      <Select onValueChange={(id) => fetchSongsInPlaylist(id)}>
-        <SelectTrigger className="w-[160px] text-center text-green-300">
-          <SelectValue placeholder="Playlists" />
-        </SelectTrigger>
-        <SelectContent className="w-full">
-          {!content ? "No playlists found." : content}
-        </SelectContent>
-      </Select>
+        <Select onValueChange={(id) => fetchSongsInPlaylist(id)}>
+          <SelectTrigger className="md:w-[160px] w-auto text-center text-green-300">
+            <SelectValue placeholder="Playlists" />
+          </SelectTrigger>
+          <SelectContent className="w-full">
+            {!content ? "No playlists found." : content}
+          </SelectContent>
+        </Select>
       </div>
       <Table>
         <TableCaption>Playlist Tracks</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-1/2">Song / Artist</TableHead>
+            <TableHead className="w-0">#</TableHead>
+            <TableHead className="">Song / Artist</TableHead>
             <TableHead className="text-center">Album</TableHead>
             <TableHead className="text-right">Duration</TableHead>
           </TableRow>

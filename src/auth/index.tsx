@@ -92,7 +92,8 @@ const SpotifyLogin = ({
       code_verifier: codeVerifier!,
     });
 
-    await fetch("https://accounts.spotify.com/api/token", {
+
+    if (code) { await fetch("https://accounts.spotify.com/api/token", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -114,7 +115,8 @@ const SpotifyLogin = ({
       })
       .catch((error) => {
         console.error("Error:", error);
-      });
+      });}
+   
   };
 
   const getProfile = async (accessToken: string | null) => {
@@ -169,7 +171,6 @@ const SpotifyLogin = ({
     } catch (error) {
       setError(error);
     }
-    console.log("refresh token function fired");
   };
 
   const calculateTimeInOneHour = () => {
@@ -216,10 +217,9 @@ const SpotifyLogin = ({
       {!userData && isLoading && <Skeleton className="w-[200px] h-[100px]" />}
       {userData && (
         <>
-          <Button onClick={logoutHandler}>Logout</Button>
           {!isLoading && !error && (
-            <div className="bg-green-700 p-3 rounded-sm shadow-md">
-              <div className="flex gap-2 items-center">
+            <div className="flex space-x-2 pb-4">
+              <div className="flex gap-2 items-center align-middle bg-green-700 p-3 w-full rounded-sm shadow-sm">
                 <Avatar>
                   <AvatarImage src={userData?.images[0].url} />
                   <AvatarFallback>{userData?.display_name}</AvatarFallback>
@@ -239,6 +239,7 @@ const SpotifyLogin = ({
                   </Label>
                 </div>
               </div>
+              <Button className="w-auto" onClick={logoutHandler}>Logout</Button>
             </div>
           )}
         </>

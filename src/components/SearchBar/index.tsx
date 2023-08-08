@@ -17,9 +17,11 @@ export const formSchema = z.object({
   query: z.coerce.string().min(1, "Please enter a value").max(50),
 });
 
-const SearchBar = ({ trackResults }: {trackResults: (T: any) => void}) => {
+const SearchBar = ({ trackResults }: { trackResults: (T: any) => void }) => {
   const [tracks, setTracks] = useState({});
+
   const ctx = useContext(AuthContext);
+
   const onSubmit = async (query: z.infer<typeof formSchema>) => {
     let trackParameters = {
       method: "GET",
@@ -39,9 +41,13 @@ const SearchBar = ({ trackResults }: {trackResults: (T: any) => void}) => {
   };
 
   useEffect(() => {
+    let ignore = false;
     if (tracks) {
-      return trackResults(tracks);
+      trackResults(tracks);
     }
+    return () => {
+      ignore = true;
+    };
   }, [tracks]);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -50,7 +56,6 @@ const SearchBar = ({ trackResults }: {trackResults: (T: any) => void}) => {
       query: "",
     },
   });
-
 
   return (
     <Form {...form}>

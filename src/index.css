@@ -1,7 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
+
+ body {
+  background-color: rgb(3, 26, 3);
+  margin:0px;
+  padding:0px;
+ }
 @layer base {
   :root {
     --background: 0 0% 100%;

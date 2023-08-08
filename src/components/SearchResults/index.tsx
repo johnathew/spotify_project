@@ -1,7 +1,7 @@
-import { ReactNode, useContext } from "react";
-
+import { useContext } from "react";
 import { AuthContext } from "@/context/auth-context";
 import Track from "../Track";
+import { AiOutlinePlus } from "react-icons/ai";
 import {
   Table,
   TableBody,
@@ -14,8 +14,8 @@ import {
 
 const SearchResults = () => {
   const ctx = useContext(AuthContext);
-
-  let content: ReactNode = <TableRow></TableRow>;
+  let content;
+  let plus = <AiOutlinePlus />;
 
   if (ctx.trackData.length === 0) {
     content = (
@@ -26,11 +26,17 @@ const SearchResults = () => {
     );
   }
 
+  const selectHandler = (uri: string) => {
+    console.log(uri);
+  };
   if (ctx.trackData.length >= 1) {
     content = ctx.trackData.map((data) => {
       return (
         <Track
+          uri={null}
           name={data.name}
+          plus={plus}
+          onSelect={() => selectHandler(data.uri)}
           artists={data.album.artists[0].name}
           album={data.album.name}
           id={data.id}
@@ -43,20 +49,19 @@ const SearchResults = () => {
   }
 
   return (
-    <div className="border-r-2 flex flex-col items-center">
-      <h1 className="font-thin mt-4 text-green-300">
-        Song Search Results
-      </h1>
-      <Table className="w-full">
+    <div className="h-1/2 md:min-w-0 w-full ml-0 md:h-full overflow-auto">
+      <h1 className="font-thin mt-4 text-center text-green-300">Songs</h1>
+      <Table className="">
         <TableCaption>Search Results</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="">Song / Artist</TableHead>
+            <TableHead></TableHead>
+            <TableHead>Song / Artist</TableHead>
             <TableHead className="text-center">Album</TableHead>
             <TableHead className="text-right">Duration</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className="text-white">{content}</TableBody>
+        <TableBody className="text-white text-sm">{content}</TableBody>
       </Table>
     </div>
   );

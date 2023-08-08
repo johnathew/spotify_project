@@ -1,7 +1,9 @@
-import React from "react";
-
 const Header = () => {
-  return <header className="text-white bg-red-200">Hello this is the header for the spotify playlist website</header>;
+  return (
+    <header className="text-white">
+      <h1 className="text-lg font-extrabold mb-2">Spotify Playlist Project</h1>
+    </header>
+  );
 };
 
 export default Header;
