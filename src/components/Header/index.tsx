@@ -1,7 +1,7 @@
 const Header = () => {
   return (
-    <header className="text-white">
-      <h1 className="text-lg font-extrabold mb-2">Spotify Playlist Project</h1>
+    <header className="text-white pb-2">
+      <h1 className="text-sm font-thin animate-fade-left animate-ease-in">John's Spotify Playlist Project</h1>
     </header>
   );
 };

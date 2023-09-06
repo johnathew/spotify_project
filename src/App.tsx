@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import { SpotifyTrack, UserProfile } from "./types/SpotifyAPITypes";
 import SearchBar from "./components/SearchBar";
 import SpotifyLogin from "./auth";
@@ -10,10 +9,10 @@ import Playlist from "./components/Playlist";
 import Header from "./components/Header";
 
 function App() {
-  let localUserInfo = localStorage.getItem("user-profile");
-  let parsedUserInfo = JSON.parse(localUserInfo!);
-  let localToken = localStorage.getItem("access-token");
-
+  const localUserInfo = localStorage.getItem("user-profile");
+  const parsedUserInfo = JSON.parse(localUserInfo || "{}");
+  const localToken = localStorage.getItem("access-token");
+  console.log(localToken);
   const [token, setToken] = useState(localToken);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(
     parsedUserInfo
@@ -40,25 +39,24 @@ function App() {
         userData: userProfile,
       }}
     >
-      <div className="justify-center text-white md:min-w-fit h-full md:h-fit p-2 bg-emerald-950">
-        <div className="flex justify-between items-center">
-          <SearchBar trackResults={handleData} />
+      <div className="text-white w-screen h-screen items-center flex flex-col justify-center bg-emerald-950 overflow-scroll">
+        <div className="flex justify-start items-center">
           <Header />
-          <div className="flex items-center px-10">
-            <SpotifyLogin
-              authorized={handleAuth}
-              userProfile={handleUserProfile}
-            />
-          </div>
         </div>
-        <div className="flex w-full md:flex-row md:justify-center h-full md:max-h-[39rem] overflow-auto my-auto md:w-full bg-gradient-to-b from-zinc-800 to-zinc-950 rounded-md ">
-          <div className="w-full">
-            <SearchResults />
-          </div>
-          <div className="w-full">
-            <Playlist />
-          </div>
+        <div className="flex h-1/3 w-auto justify-center">
+        <SpotifyLogin authorized={handleAuth} userProfile={handleUserProfile} />
         </div>
+        {localToken && (
+          <div className="flex w-full md:flex-row md:justify-center h-full md:max-h-[39rem] overflow-auto my-auto md:w-full bg-gradient-to-b from-zinc-800 to-zinc-950 rounded-md ">
+            <SearchBar trackResults={handleData} />
+            <div className="w-full">
+              <SearchResults />
+            </div>
+            <div className="w-full">
+              <Playlist />
+            </div>
+          </div>
+        )}
       </div>
     </AuthContext.Provider>
   );

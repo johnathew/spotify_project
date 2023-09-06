@@ -23,7 +23,7 @@ const SearchBar = ({ trackResults }: { trackResults: (T: any) => void }) => {
   const ctx = useContext(AuthContext);
 
   const onSubmit = async (query: z.infer<typeof formSchema>) => {
-    let trackParameters = {
+    const trackParameters = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

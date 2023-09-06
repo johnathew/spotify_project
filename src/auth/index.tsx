@@ -4,15 +4,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { UserProfile } from "@/types/SpotifyAPITypes";
+import { ImSpotify } from "react-icons/im";
 
 const clientId = import.meta.env.VITE_SPOTIFY_CID;
 const redirectUri = import.meta.env.VITE_REDIRECT_URI;
 
-let codeVerifier = generateRandomString(128);
+const codeVerifier = generateRandomString(128);
 
 function generateRandomString(length: number) {
   let text = "";
-  let possible =
+  const possible =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
   for (let i = 0; i < length; i++) {
@@ -43,8 +44,8 @@ const SpotifyLogin = ({
   authorized: (T: string) => void;
   userProfile: (T: UserProfile) => void;
 }) => {
-  let localUserProfile = localStorage.getItem("user-profile");
-  let parsedUserData = JSON.parse(localUserProfile!);
+  const localUserProfile = localStorage.getItem("user-profile");
+  const parsedUserData = JSON.parse(localUserProfile!);
 
   const [date, setDate] = useState(new Date().getMinutes());
 
@@ -61,12 +62,12 @@ const SpotifyLogin = ({
     setError(null);
 
     generateCodeChallenge(codeVerifier).then((codeChallenge) => {
-      let state = generateRandomString(16);
-      let scope = "user-read-private user-read-email";
+      const state = generateRandomString(16);
+      const scope = "user-read-private user-read-email";
 
       localStorage.setItem("code-verifier", codeVerifier);
 
-      let args = new URLSearchParams({
+      const args = new URLSearchParams({
         response_type: "code",
         client_id: clientId,
         scope: scope,
@@ -81,10 +82,10 @@ const SpotifyLogin = ({
 
   const getAccessToken = async () => {
     const urlParams = new URLSearchParams(window.location.search);
-    let code = urlParams.get("code");
-    let codeVerifier = localStorage.getItem("code-verifier");
+    const code = urlParams.get("code");
+    const codeVerifier = localStorage.getItem("code-verifier");
 
-    let body = new URLSearchParams({
+    const body = new URLSearchParams({
       grant_type: "authorization_code",
       code: code!,
       redirect_uri: redirectUri,
@@ -92,31 +93,31 @@ const SpotifyLogin = ({
       code_verifier: codeVerifier!,
     });
 
-
-    if (code) { await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: body,
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("HTTP status " + response.status);
-        }
-        return response.json();
+    if (code) {
+      await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: body,
       })
-      .then((data) => {
-        localStorage.setItem("access-token", data.access_token);
-        localStorage.setItem("refresh-token", data.refresh_token);
-        calculateTimeInOneHour();
-        getProfile(data.access_token);
-        authorized(data.access_token);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });}
-   
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("HTTP status " + response.status);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          localStorage.setItem("access-token", data.access_token);
+          localStorage.setItem("refresh-token", data.refresh_token);
+          calculateTimeInOneHour();
+          getProfile(data.access_token);
+          authorized(data.access_token);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
   };
 
   const getProfile = async (accessToken: string | null) => {
@@ -145,7 +146,7 @@ const SpotifyLogin = ({
   };
 
   const getRefreshToken = async (refreshToken: string) => {
-    let body = new URLSearchParams({
+    const body = new URLSearchParams({
       grant_type: "refresh_token",
       refresh_token: refreshToken!,
       client_id: clientId,
@@ -175,14 +176,14 @@ const SpotifyLogin = ({
 
   const calculateTimeInOneHour = () => {
     const now = new Date();
-    let time = now.getMinutes() + 60;
+    const time = now.getMinutes() + 60;
     localStorage.setItem("expires_in", JSON.stringify(time));
   };
 
   useEffect(() => {
-    let localCodeToken = localStorage.getItem("code-verifier");
-    let refresh = localStorage.getItem("refresh-token");
-    let expiration = localStorage.getItem("expires_in");
+    const localCodeToken = localStorage.getItem("code-verifier");
+    const refresh = localStorage.getItem("refresh-token");
+    const expiration = localStorage.getItem("expires_in");
 
     const timer = setInterval(() => setDate(new Date().getMinutes()), 1000);
 
@@ -209,40 +210,47 @@ const SpotifyLogin = ({
 
   return (
     <>
-      {!userData && (
-        <>
-          <Button onClick={loginHandler}>Login</Button>
-        </>
+      {!userData && !isLoading && (
+        <div className="bg-orange-300 w-auto  h-full flex flex-col animate-fade-left animate-ease-in p-10 shadow-slate-900 shadow-md rounded-xl justify-evenly ">
+          <h1 className="font-bold text-4xl text-black space-x-2">
+            <ImSpotify className="text-4xl" />
+            Login to Spotify
+          </h1>
+          <Button onClick={loginHandler} className="h-auto w-auto">
+            Login
+          </Button>
+        </div>
       )}
       {!userData && isLoading && <Skeleton className="w-[200px] h-[100px]" />}
       {userData && (
-        <>
-          {!isLoading && !error && (
-            <div className="flex space-x-2 pb-4">
-              <div className="flex gap-2 items-center align-middle bg-green-700 p-3 w-full rounded-sm shadow-sm">
-                <Avatar>
-                  <AvatarImage src={userData?.images[0].url} />
-                  <AvatarFallback>{userData?.display_name}</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col gap-y-2">
-                  <Label>
-                    <span className="font-light">Username: </span>
-                    {userData?.display_name}
-                  </Label>
-                  <Label>
-                    <span className="font-light">Email: </span>
-                    {userData?.email}
-                  </Label>
-                  <Label>
-                    <span className="font-light">Followers: </span>{" "}
-                    {userData?.followers.total}
-                  </Label>
-                </div>
-              </div>
-              <Button className="w-auto" onClick={logoutHandler}>Logout</Button>
+        <div className="flex w-auto h-full justify-left shadow-md shadow-black">
+          <div className="flex gap-2 items-center align-middle bg-green-700 p-2 w-full rounded-sm shadow-sm">
+            <Avatar>
+              <AvatarImage
+                src={userData?.images[0].url}
+                className="h-auto w-10"
+              />
+              <AvatarFallback>{userData?.display_name}</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col gap-y-2">
+              <Label>
+                <span className="font-light">Username: </span>
+                {userData?.display_name}
+              </Label>
+              <Label>
+                <span className="font-light">Email: </span>
+                {userData?.email}
+              </Label>
+              <Label>
+                <span className="font-light">Followers: </span>{" "}
+                {userData?.followers.total}
+              </Label>
+              <Button className="w-1/2 h-auto" onClick={logoutHandler}>
+                Logout
+              </Button>
             </div>
-          )}
-        </>
+          </div>
+        </div>
       )}
       {!isLoading && error && <p>{error.message}</p>}
     </>

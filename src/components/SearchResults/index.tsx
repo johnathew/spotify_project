@@ -15,7 +15,6 @@ import {
 const SearchResults = () => {
   const ctx = useContext(AuthContext);
   let content;
-  let plus = <AiOutlinePlus />;
 
   if (ctx.trackData.length === 0) {
     content = (
@@ -35,7 +34,7 @@ const SearchResults = () => {
         <Track
           uri={null}
           name={data.name}
-          plus={plus}
+          plus={<AiOutlinePlus />}
           onSelect={() => selectHandler(data.uri)}
           artists={data.album.artists[0].name}
           album={data.album.name}
