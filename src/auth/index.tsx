@@ -211,20 +211,34 @@ const SpotifyLogin = ({
   return (
     <>
       {!userData && !isLoading && (
-        <div className="bg-orange-300 w-auto  h-full flex flex-col animate-fade-left animate-ease-in p-10 shadow-slate-900 shadow-md rounded-xl justify-evenly ">
-          <h1 className="font-bold text-4xl text-black space-x-2">
-            <ImSpotify className="text-4xl" />
-            Login to Spotify
-          </h1>
-          <Button onClick={loginHandler} className="h-auto w-auto">
-            Login
-          </Button>
+        <div className="flex flex-col h-auto items-center animate-fade-left animate-ease-in align-middle">
+          <div className="bg-green-500 border-2 w-3/4 md:w-3/4 h-full flex md:p-10 p-4 shadow-slate-900 shadow-md rounded-xl justify-evenly items-center ">
+            <h1 className="font-bold md:text-4xl text-3xl flex justify-start items-center align-middle text-black">
+              <ImSpotify className="text-4xl mr-2" />
+              Login to Spotify
+            </h1>
+            <Button onClick={loginHandler} className="h-auto w-auto">
+              Login
+            </Button>
+          </div>
+          <ul className="list-disc list-inside text-sm marker:text-orange-300 w-3/4 h-full m-10">
+            <li className="font-extralight">
+              This app uses Spotify's API to search for songs and add them to a
+              new or existing playlist.
+            </li>
+            <li className="font-extralight">
+              You will need a Spotify account to use this app. If you don't have one you can create one, or login with Facebook.
+            </li>
+            <li className="font-extralight">
+              This app does not store any of your data.
+            </li>
+          </ul>
         </div>
       )}
       {!userData && isLoading && <Skeleton className="w-[200px] h-[100px]" />}
       {userData && (
-        <div className="flex w-auto h-full justify-left shadow-md shadow-black">
-          <div className="flex gap-2 items-center align-middle bg-green-700 p-2 w-full rounded-sm shadow-sm">
+        <div className="flex m-2 w-full md:w-1/4 h-full md:h-full justify-left shadow-md border-[0.5px] border-black">
+          <div className="flex h-auto items-center align-middle bg-green-700 p-2 w-full rounded-sm shadow-sm">
             <Avatar>
               <AvatarImage
                 src={userData?.images[0].url}
@@ -232,23 +246,23 @@ const SpotifyLogin = ({
               />
               <AvatarFallback>{userData?.display_name}</AvatarFallback>
             </Avatar>
-            <div className="flex flex-col gap-y-2">
-              <Label>
-                <span className="font-light">Username: </span>
+            <div className="flex flex-col px-2">
+              <Label className="text-xs">
+                <span className="font-light ">Username: </span>
                 {userData?.display_name}
               </Label>
-              <Label>
+              <Label className="text-xs">
                 <span className="font-light">Email: </span>
                 {userData?.email}
               </Label>
-              <Label>
+              <Label className="text-xs">
                 <span className="font-light">Followers: </span>{" "}
                 {userData?.followers.total}
               </Label>
-              <Button className="w-1/2 h-auto" onClick={logoutHandler}>
+            </div>
+            <Button className="w-1/5 h-auto text-[10px]" onClick={logoutHandler}>
                 Logout
               </Button>
-            </div>
           </div>
         </div>
       )}
