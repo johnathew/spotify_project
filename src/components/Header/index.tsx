@@ -8,7 +8,7 @@ const Header = () => {
   };
 
   return (
-    <header className="text-white p-2 w-full h-auto flex justify-between items-center sticky top-0 bg-blue-700 shadow-lg border-gray-400">
+    <header className="text-white p-2 w-full h-auto flex justify-between items-center sticky top-0 z-10 bg-blue-700 shadow-lg border-gray-400">
       <div className="flex space-x-2 items-center">
       <h1 className="text-sm font-thin">John's Spotify Playlist Project</h1>
       <button onClick={handleClick}><AiFillGithub className="text-xl text-green-500"/></button>
