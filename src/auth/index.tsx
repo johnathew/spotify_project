@@ -208,6 +208,12 @@ const SpotifyLogin = ({
     authorized("");
   };
 
+  const handleClick = () => {
+    window.open(
+      "https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce"
+    );
+  };
+
   return (
     <>
       {!userData && !isLoading && (
@@ -221,16 +227,31 @@ const SpotifyLogin = ({
               Login
             </Button>
           </div>
-          <ul className="list-disc list-inside text-sm marker:text-orange-300 w-3/4 h-full m-10">
+          <ul className="list-disc list-inside text-sm marker:text-green-500 w-3/4 h-full m-5">
             <li className="font-extralight">
               This app uses Spotify's API to search for songs and add them to a
               new or existing playlist.
             </li>
             <li className="font-extralight">
-              You will need a Spotify account to use this app. If you don't have one you can create one, or login with Facebook.
+              You will need a Spotify account to use this app. If you don't have
+              one you can create one, or login with Facebook.
             </li>
             <li className="font-extralight">
               This app does not store any of your data.
+            </li>
+            <li className="font-extralight">
+              By utilizing{" "}
+              <span className="font-bold">
+                <button onClick={handleClick} className="hover:underline">
+                  PKCE authentication
+                </button>
+              </span>
+              , a user can login to Spotify without having to share their
+              username and password with a third party.
+            </li>
+            <li className="font-extralight">
+              This app is not affiliated with Spotify in any official capacity
+              and is purely for demonstrational purposes.
             </li>
           </ul>
         </div>
@@ -260,9 +281,12 @@ const SpotifyLogin = ({
                 {userData?.followers.total}
               </Label>
             </div>
-            <Button className="w-1/5 h-auto text-[10px]" onClick={logoutHandler}>
-                Logout
-              </Button>
+            <Button
+              className="w-1/5 h-auto text-[10px]"
+              onClick={logoutHandler}
+            >
+              Logout
+            </Button>
           </div>
         </div>
       )}

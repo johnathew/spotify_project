@@ -38,7 +38,7 @@ function App() {
       }}
     >
       <Header />
-      <div className="text-white w-full h-screen flex flex-col justify-center bg-blue-700">
+      <div className="text-white w-full h-screen flex flex-col justify-center bg-blue-700 overflow-auto">
         <div className="flex h-[10%] w-auto md:justify-around items-center">
           <SpotifyLogin
             authorized={handleAuth}
