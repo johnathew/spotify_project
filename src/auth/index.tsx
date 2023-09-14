@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { UserProfile } from "@/types/SpotifyAPITypes";
 import { ImSpotify } from "react-icons/im";
-import monoPlaylist from "../assets/monoPlaylist.svg"
+import monoPlaylist from "../assets/monoPlaylist.svg";
 
 const clientId = import.meta.env.VITE_SPOTIFY_CID;
 const redirectUri = import.meta.env.VITE_REDIRECT_URI;
@@ -64,7 +64,8 @@ const SpotifyLogin = ({
 
     generateCodeChallenge(codeVerifier).then((codeChallenge) => {
       const state = generateRandomString(16);
-      const scope = "user-read-private user-read-email";
+      const scope =
+        "user-read-private user-read-email playlist-modify-public playlist-modify-private";
 
       localStorage.setItem("code-verifier", codeVerifier);
 
@@ -130,9 +131,6 @@ const SpotifyLogin = ({
           Authorization: "Bearer " + accessToken,
         },
       });
-      if (!response.ok) {
-        throw new Error("Something went wrong.");
-      }
 
       const data: UserProfile = await response.json();
 
@@ -204,6 +202,9 @@ const SpotifyLogin = ({
   }, [userData, date]);
 
   const logoutHandler = () => {
+    const history = window.history;
+    history.replaceState(null, "", "/");
+
     window.localStorage.clear();
     setUserData(null);
     authorized("");
@@ -220,77 +221,88 @@ const SpotifyLogin = ({
       {!userData && !isLoading && (
         <div className="flex md:flex-row flex-col h-auto items-center animate-fade-left animate-ease-in align-middle">
           <div className="m-5 flex-col flex items-center">
-          <div className="bg-green-500 border-2 w-3/4 md:w-3/4 h-full flex md:p-10 p-4 shadow-slate-900 shadow-md rounded-xl justify-evenly items-center ">
-            <h1 className="font-bold md:text-4xl text-3xl flex justify-start items-center align-middle text-black">
-              <ImSpotify className="text-4xl mr-2" />
-              Playlist Project
-            </h1>
-            <Button onClick={loginHandler} className="h-auto w-auto">
-              Login
-            </Button>
+            <div className="bg-green-500 border-2 w-3/4 md:w-3/4 h-full flex md:p-10 p-4 shadow-slate-900 shadow-md rounded-xl justify-evenly items-center ">
+              <h1 className="font-bold md:text-4xl text-3xl flex justify-start items-center align-middle text-black">
+                <ImSpotify className="text-4xl mr-2" />
+                Playlist Project
+              </h1>
+              <Button
+                onClick={loginHandler}
+                className="h-auto w-auto hover:animate-wiggle hover:animate-infinite"
+              >
+                Login
+              </Button>
+            </div>
+            <ul className="list-disc list-inside text-sm marker:text-green-500 w-3/4 h-full m-5">
+              <li className="font-extralight">
+                This app uses Spotify's API to search for songs and add them to
+                a new or existing playlist.
+              </li>
+              <li className="font-extralight">
+                You will need a Spotify account to use this app. If you don't
+                have one you can create one, or login with Facebook.
+              </li>
+              <li className="font-extralight">
+                This app does not store any of your data. However, any new
+                playlists or songs added to existing playlists will be saved to
+                your Spotify account.
+              </li>
+              <li className="font-extralight">
+                By utilizing{" "}
+                <span className="font-bold">
+                  <button onClick={handleClick} className="hover:underline">
+                    PKCE authentication
+                  </button>
+                </span>
+                , a user can login to Spotify without having to share their
+                username and password with a third party.
+              </li>
+              <li className="font-extralight">
+                This app is not affiliated with Spotify in any official capacity
+                and is purely for demonstrational purposes.
+              </li>
+            </ul>
           </div>
-          <ul className="list-disc list-inside text-sm marker:text-green-500 w-3/4 h-full m-5">
-            <li className="font-extralight">
-              This app uses Spotify's API to search for songs and add them to a
-              new or existing playlist.
-            </li>
-            <li className="font-extralight">
-              You will need a Spotify account to use this app. If you don't have
-              one you can create one, or login with Facebook.
-            </li>
-            <li className="font-extralight">
-              This app does not store any of your data.
-            </li>
-            <li className="font-extralight">
-              By utilizing{" "}
-              <span className="font-bold">
-                <button onClick={handleClick} className="hover:underline">
-                  PKCE authentication
-                </button>
-              </span>
-              , a user can login to Spotify without having to share their
-              username and password with a third party.
-            </li>
-            <li className="font-extralight">
-              This app is not affiliated with Spotify in any official capacity
-              and is purely for demonstrational purposes.
-            </li>
-          </ul>
-          </div>
-        <img src={monoPlaylist} alt="playlist logo" className="md:w-52 w-2 h-auto animate-fade-left"/>
+          <img
+            src={monoPlaylist}
+            alt="playlist logo"
+            className="md:w-52 w-28 h-auto animate-fade-left"
+          />
         </div>
       )}
       {!userData && isLoading && <Skeleton className="w-[200px] h-[100px]" />}
       {userData && (
-        <div className="flex m-2 w-full md:w-1/4 h-auto shadow-md border-[0.5px] border-black">
+        <div className="flex w-full md:ml-2 md:w-auto h-auto justify-center shadow-md border-[0.5px] border-black">
           <div className="flex h-auto items-center align-middle bg-green-700 p-2 w-full rounded-sm shadow-sm">
             <Avatar>
               <AvatarImage
                 src={userData?.images[0].url}
-                className="h-auto w-10 z-0"
+                className="h-auto w-auto"
               />
               <AvatarFallback>{userData?.display_name}</AvatarFallback>
             </Avatar>
-            <div className="flex flex-col px-2">
-              <Label className="text-xs">
-                <span className="font-light ">Username: </span>
-                {userData?.display_name}
-              </Label>
-              <Label className="text-xs">
-                <span className="font-light">Email: </span>
-                {userData?.email}
-              </Label>
-              <Label className="text-xs">
-                <span className="font-light">Followers: </span>{" "}
-                {userData?.followers.total}
-              </Label>
+            <div className="flex items-center">
+              <div className="flex flex-col ml-1">
+                <Label className="text-[10px] md:text-xs">
+                  <span className="font-light ">Username: </span>
+                  {userData?.display_name}
+                </Label>
+                <Label className="text-[10px] md:text-xs">
+                  <span className="font-light">Email: </span>
+                  {userData?.email}
+                </Label>
+                <Label className="text-[10px] md:text-xs">
+                  <span className="font-light">Followers: </span>{" "}
+                  {userData?.followers.total}
+                </Label>
+              </div>
+              <Button
+                className="w-1/4 md:w-1/4 h-1/2 text-[10px] md:text-xs md:ml-2"
+                onClick={logoutHandler}
+              >
+                Logout
+              </Button>
             </div>
-            <Button
-              className="w-1/5 h-auto text-[10px]"
-              onClick={logoutHandler}
-            >
-              Logout
-            </Button>
           </div>
         </div>
       )}

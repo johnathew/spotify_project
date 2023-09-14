@@ -1,5 +1,5 @@
 import { AuthContext } from "@/context/auth-context";
-import { ReactNode, useContext, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -20,10 +20,11 @@ import { Item, PlaylistTypes } from "@/types/SpotifyAPITypes";
 import Track from "../Track";
 import Loading from "../Loading";
 
-const Playlist = () => {
+const Playlist = ({ playlistID }: { playlistID: (T: string) => void }) => {
   const ctx = useContext(AuthContext);
   const [playlists, setPlaylists] = useState<PlaylistTypes[]>();
   const [playlistTracks, setPlaylistTracks] = useState<Item[]>();
+  const [snapshotID, setSnapshotID] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
   const fetchUsersPlaylists = async () => {
@@ -37,11 +38,12 @@ const Playlist = () => {
           },
         }
       );
+      const playlistData = await response.json();
+      setPlaylists(playlistData.items);
+      console.log(playlistData.items);
       if (!response.ok) {
         throw new Error("Something went wrong.");
       }
-      const playlistData = await response.json();
-      setPlaylists(playlistData.items);
     } catch (error) {
       console.log(error);
     }
@@ -49,6 +51,7 @@ const Playlist = () => {
 
   const fetchSongsInPlaylist = async (id: string) => {
     setLoading(true);
+    playlistID(id);
     try {
       const response = await fetch(
         `https://api.spotify.com/v1/playlists/${id}/tracks`,
@@ -64,21 +67,21 @@ const Playlist = () => {
       }
       const playlistTracks = await response.json();
       setPlaylistTracks(playlistTracks.items);
+      setSnapshotID(playlistTracks.snapshot_id);
     } catch (error) {
       console.log(error);
     }
     setLoading(false);
-    console.log(id);
   };
 
-  if (ctx.accessToken && playlists === undefined) {
-    setTimeout(() => {
+  useEffect(() => {
+    if (ctx.userData?.id) {
       fetchUsersPlaylists();
-    }, 200);
-  }
+    }
+  }, [ctx.userData?.id, snapshotID]);
 
-  if (!ctx.accessToken && playlists !== undefined) {
-    setPlaylists(undefined);
+  if (playlists?.length === 0) {
+    return <div className="text-white text-center">No playlists found.</div>;
   }
 
   const content = playlists?.map((item) => {
@@ -103,8 +106,7 @@ const Playlist = () => {
     tracks = <Loading />;
   }
 
-  // typescript expecting a URI prop...but not needed here. dont know what to do but make it null
-  if (playlistTracks?.length !== undefined && !loading) {
+  if (playlistTracks?.length !== undefined) {
     tracks = playlistTracks.map((trk, num) => {
       return (
         <Track
@@ -125,9 +127,14 @@ const Playlist = () => {
     });
   }
 
+  if (ctx.snapshotID && ctx.snapshotID !== snapshotID) {
+    console.log('fired from playlist')
+    fetchSongsInPlaylist(ctx.playlistID);
+  }
+
   return (
-    <div className=" h-1/2 md:min-w-0 w-full md:h-full overflow-auto">
-      <div className="flex items-center align-middle justify-evenly">
+    <div className=" h-1/2 w-full md:h-full overflow-auto border-y-[0.5px] ">
+      <div className="flex items-center align-middle justify-evenly sticky top-0 border-b-[0.5px] z-10 bg-zinc-800">
         <h1 className="font-thin text-green-300">User's Playlist Songs</h1>
         <Select onValueChange={(id) => fetchSongsInPlaylist(id)}>
           <SelectTrigger className="md:w-[160px] w-auto text-center text-green-300">

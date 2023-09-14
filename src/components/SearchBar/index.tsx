@@ -61,7 +61,7 @@ const SearchBar = ({ trackResults }: { trackResults: (T: any) => void }) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex text-black m-2 p-2 space-x-2"
+        className="flex m-2 w-auto flex-col items-end md:flex-row text-black md:w-1/4 rounded-md"
       >
         <FormField
           control={form.control}
@@ -75,7 +75,12 @@ const SearchBar = ({ trackResults }: { trackResults: (T: any) => void }) => {
             </FormItem>
           )}
         />
-        <Button type="submit">Enter</Button>
+        <Button
+          type="submit"
+          className="w-1/4 md:w-1/4 h-1/2 mr-2 mt-1 text-[10px] md:text-xs md:ml-2"
+        >
+          Enter
+        </Button>
       </form>
     </Form>
   );

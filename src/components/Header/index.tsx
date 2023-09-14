@@ -8,13 +8,13 @@ const Header = () => {
   };
 
   return (
-    <header className="text-white p-2 w-full h-auto flex justify-between items-center sticky top-0 z-10 bg-blue-700 shadow-lg border-gray-400">
+    <header className="text-white p-2 w-full h-auto flex justify-between items-center border-b-[1px] drop-shadow-lg bg-blue-700 border-gray-400">
       <div className="flex space-x-2 items-center">
       <h1 className="text-sm font-thin">John's Spotify Playlist Project</h1>
       <button onClick={handleClick}><AiFillGithub className="text-xl text-green-500"/></button>
       </div>
       <div className=" w-auto">
-    <img src={spotifyLogo} alt="Spotify logo" className="w-auto h-10"/>
+    <img src={spotifyLogo} alt="Spotify logo" className="w-auto h-5 md:h-10"/>
       </div>  
     </header>
   );

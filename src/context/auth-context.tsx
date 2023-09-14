@@ -4,11 +4,15 @@ import React from "react";
 type AuthContextType = {
   accessToken: string | null;
   trackData: SpotifyTrack[];
-  userData: UserProfile | null
+  userData: UserProfile | null;
+  playlistID: string;
+  snapshotID: string;
 };
 
 export const AuthContext = React.createContext<AuthContextType>({
   accessToken: "",
   trackData: [],
-  userData: null
+  userData: null,
+  playlistID: '',
+  snapshotID: '',
 });
