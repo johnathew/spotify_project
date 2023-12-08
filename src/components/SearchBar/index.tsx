@@ -41,13 +41,9 @@ const SearchBar = ({ trackResults }: { trackResults: (T: any) => void }) => {
   };
 
   useEffect(() => {
-    let ignore = false;
     if (tracks) {
       trackResults(tracks);
     }
-    return () => {
-      ignore = true;
-    };
   }, [tracks]);
 
   const form = useForm<z.infer<typeof formSchema>>({

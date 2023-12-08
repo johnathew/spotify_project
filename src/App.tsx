@@ -36,7 +36,7 @@ function App() {
     return setPlaylistID(playlistID);
   };
   const handleSnapshotID = (snapshotID: string) => {
-    return setPlaylistID(snapshotID);
+    return setSnapshotID(snapshotID);
   }
 
   return (
@@ -61,7 +61,7 @@ function App() {
         {localToken && (
           <>
             <div className="flex flex-col my-2 w-full md:flex-row md:justify-center h-full overflow-auto md:w-full bg-gradient-to-b mb-0 items-center from-zinc-800 to-zinc-950 rounded-md ">
-              <SearchResults snapshotId={handlePlaylistID}/>
+              <SearchResults snapshotId={handleSnapshotID} />
               <Playlist playlistID={handlePlaylistID} />
             </div>
           </>

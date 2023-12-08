@@ -26,15 +26,16 @@ const Track = ({
 
   return (
     <TableRow className="md:text-xs shrink">
-      <TableCell onClick={() => onSelect!(uri!)}>{plus}</TableCell>
+      <TableCell onClick={() => onSelect!(uri!)} className="bg-slate-900 hover:bg-slate-600 hover:cursor-pointer">{plus}</TableCell>
       <TableCell className="flex align-middle items-center text-white">
-        <img src={url} className="md:h-14 h-5 w-auto" />
+        <img src={url} className="md:h-10 h-5 w-auto" />
         <div className="flex flex-col w-full ml-2 ">
-          {name}
-          <div className="font-light">{artists}</div>
+          <p className="line-clamp-3">{name}</p>
+          <div className="font-bold">
+            <p className="line-clamp-3">{artists}</p></div>
         </div>
       </TableCell>
-      <TableCell className="text-center w-[144px]">{album}</TableCell>
+      <TableCell className="text-center text-[11px]">{album}</TableCell>
       <TableCell className="text-right">
         {convertMsToMinutesSeconds(duration_ms)}
       </TableCell>

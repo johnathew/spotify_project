@@ -233,7 +233,7 @@ const SpotifyLogin = ({
                 Login
               </Button>
             </div>
-            <ul className="list-disc list-inside text-sm marker:text-green-500 w-3/4 h-full m-5">
+            <ul className="list-decimal list-inside md:text-base text-xs  marker:text-green-500 w-3/4 h-full m-5">
               <li className="font-extralight">
                 This app uses Spotify's API to search for songs and add them to
                 a new or existing playlist.

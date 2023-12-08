@@ -8,6 +8,31 @@
   padding: 0;
 }
 
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgba(23, 200, 20, 0.945);
+  border-radius: 5px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(41, 41, 237, 0.823);
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;

@@ -20,12 +20,14 @@ import { Item, PlaylistTypes } from "@/types/SpotifyAPITypes";
 import Track from "../Track";
 import Loading from "../Loading";
 
-const Playlist = ({ playlistID }: { playlistID: (T: string) => void }) => {
+const Playlist = ({ playlistID }: { playlistID: (T: string) => void}) => {
   const ctx = useContext(AuthContext);
+
   const [playlists, setPlaylists] = useState<PlaylistTypes[]>();
   const [playlistTracks, setPlaylistTracks] = useState<Item[]>();
-  const [snapshotID, setSnapshotID] = useState<string>("");
+
   const [loading, setLoading] = useState(false);
+
 
   const fetchUsersPlaylists = async () => {
     try {
@@ -40,7 +42,6 @@ const Playlist = ({ playlistID }: { playlistID: (T: string) => void }) => {
       );
       const playlistData = await response.json();
       setPlaylists(playlistData.items);
-      console.log(playlistData.items);
       if (!response.ok) {
         throw new Error("Something went wrong.");
       }
@@ -54,7 +55,7 @@ const Playlist = ({ playlistID }: { playlistID: (T: string) => void }) => {
     playlistID(id);
     try {
       const response = await fetch(
-        `https://api.spotify.com/v1/playlists/${id}/tracks`,
+        `https://api.spotify.com/v1/playlists/${id}/`,
         {
           method: "GET",
           headers: {
@@ -66,8 +67,7 @@ const Playlist = ({ playlistID }: { playlistID: (T: string) => void }) => {
         throw new Error("Something went wrong.");
       }
       const playlistTracks = await response.json();
-      setPlaylistTracks(playlistTracks.items);
-      setSnapshotID(playlistTracks.snapshot_id);
+      setPlaylistTracks(playlistTracks.tracks.items);
     } catch (error) {
       console.log(error);
     }
@@ -78,7 +78,7 @@ const Playlist = ({ playlistID }: { playlistID: (T: string) => void }) => {
     if (ctx.userData?.id) {
       fetchUsersPlaylists();
     }
-  }, [ctx.userData?.id, snapshotID]);
+  }, [ctx.userData?.id]);
 
   if (playlists?.length === 0) {
     return <div className="text-white text-center">No playlists found.</div>;
@@ -127,38 +127,42 @@ const Playlist = ({ playlistID }: { playlistID: (T: string) => void }) => {
     });
   }
 
-  if (ctx.snapshotID && ctx.snapshotID !== snapshotID) {
-    console.log('fired from playlist')
-    fetchSongsInPlaylist(ctx.playlistID);
-  }
 
-  return (
-    <div className=" h-1/2 w-full md:h-full overflow-auto border-y-[0.5px] ">
-      <div className="flex items-center align-middle justify-evenly sticky top-0 border-b-[0.5px] z-10 bg-zinc-800">
-        <h1 className="font-thin text-green-300">User's Playlist Songs</h1>
-        <Select onValueChange={(id) => fetchSongsInPlaylist(id)}>
-          <SelectTrigger className="md:w-[160px] w-auto text-center text-green-300">
-            <SelectValue placeholder="Playlists" />
-          </SelectTrigger>
-          <SelectContent className="w-full">
-            {!content ? "No playlists found." : content}
-          </SelectContent>
-        </Select>
-      </div>
-      <Table>
-        <TableCaption>Playlist Tracks</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-0">#</TableHead>
-            <TableHead className="">Song / Artist</TableHead>
-            <TableHead className="text-center">Album</TableHead>
-            <TableHead className="text-right">Duration</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>{tracks}</TableBody>
-      </Table>
+  useEffect(() => {
+    const fetchNewPlaylist = async () => {
+      await fetchSongsInPlaylist(ctx.playlistID);
+    }
+    fetchNewPlaylist()
+
+  }, [ctx.snapshotID])
+
+return (
+  <div className=" h-1/2 w-full md:h-full overflow-auto border-y-[0.5px] ">
+    <div className="flex items-center align-middle justify-evenly sticky top-0 border-b-[0.5px] z-10 bg-zinc-800">
+      <h1 className="font-thin text-green-300">User's Playlist Songs</h1>
+      <Select onValueChange={(id) => fetchSongsInPlaylist(id)}>
+        <SelectTrigger className="md:w-[160px] w-auto text-center text-green-300">
+          <SelectValue placeholder="Playlists" />
+        </SelectTrigger>
+        <SelectContent className="w-full">
+          {!content ? "No playlists found." : content}
+        </SelectContent>
+      </Select>
     </div>
-  );
+    <Table>
+      <TableCaption>Playlist Tracks</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-0">#</TableHead>
+          <TableHead className="md:w-1/2 w-auto">Song / Artist</TableHead>
+          <TableHead className="text-center">Album</TableHead>
+          <TableHead className="text-right">Duration</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>{tracks}</TableBody>
+    </Table>
+  </div>
+);
 };
 
 export default Playlist;

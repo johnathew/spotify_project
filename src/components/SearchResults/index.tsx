@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { AuthContext } from "@/context/auth-context";
 import Track from "../Track";
 import { AiOutlinePlus } from "react-icons/ai";
@@ -14,10 +14,7 @@ import {
 
 const SearchResults = ({ snapshotId }: { snapshotId: (T: string) => void }) => {
   const ctx = useContext(AuthContext);
-
   let content;
-  console.log(ctx.trackData);
-
   if (ctx.trackData.length === 0) {
     content = (
       <TableRow>
@@ -64,7 +61,8 @@ const SearchResults = ({ snapshotId }: { snapshotId: (T: string) => void }) => {
   }
 
   return (
-    <div className="h-1/2 md:w-1/2 w-full ml-0 md:h-full overflow-auto md:border-r-[1px] border-b-[1px] border-green-500">
+    <div className="h-1/2 md:w-1/2 w-full ml-0 md:h-full overflow-auto md:border-r-[1px] border-b-[1px]"
+    >
       <h1 className="font-thin p-2 bg-zinc-800 text-center text-green-300 sticky top-0 border-y-[0.5px] z-10">
         Search Results
       </h1>
